@@ -1,0 +1,38 @@
+version: "3.4"
+services:
+  db:
+    image: "mariadb:10.2.40"
+    command: --default-authentication-plugin=mysql_native_password
+    ports: 
+      - "3306:3306"
+    networks:
+      - default
+    restart: "always"
+    environment:
+      MYSQL_DATABASE: radius
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_ROOT_PASSWORD: admin
+    volumes:
+      - ./dump:/docker-entrypoint-initdb.d
+      - mysql2:/var/lib/mysql
+    cap_add:
+      - SYS_NICE
+
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    links: 
+      - db:db
+    ports:
+      - 8002:80
+    environment:
+      MYSQL_USER: user
+      MYSQL_PASSWORD: admin
+      MYSQL_ROOT_PASSWORD: admin
+      UPLOAD_LIMIT: 1G
+
+
+
+volumes:
+  mysql2:
